@@ -20,7 +20,7 @@ export type Receipt = {
   tool_response_hash: string;
   tool_response_status: number;
   tool_response_excerpt: string;
-  agent_signature: string;
+  signature: string;
 };
 
 type Batch = {
@@ -60,7 +60,7 @@ const sha256 = (data: Buffer): Buffer =>
 
 // receipt_hash = SHA-256(canonical_json(receipt_without_signature))
 function hashReceipt(receipt: Receipt): string {
-  const { agent_signature: _sig, ...withoutSig } = receipt;
+  const { signature: _sig, ...withoutSig } = receipt;
   return createHash("sha256")
     .update(canonicalize(withoutSig)!)
     .digest("hex");

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.join(__dirname, "../.env") });
 import express from "express";
 import { anchorBatch, Receipt } from "./anchor";
+import { verifyReceipt, VerifyInput } from "./verify";
 
 const app = express();
 app.use(express.json());
@@ -27,6 +28,24 @@ app.post("/anchor", async (req, res) => {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[anchor] error:", message);
+    res.status(500).json({ error: message });
+  }
+});
+
+app.post("/verify", async (req, res) => {
+  const input = req.body as VerifyInput;
+
+  if (!input?.receipt || !input?.batch_id || !Array.isArray(input?.merkle_proof)) {
+    res.status(400).json({ error: "receipt, batch_id, and merkle_proof are required" });
+    return;
+  }
+
+  try {
+    const result = await verifyReceipt(input);
+    res.json(result);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[verify] error:", message);
     res.status(500).json({ error: message });
   }
 });
