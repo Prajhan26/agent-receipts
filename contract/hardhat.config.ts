@@ -25,6 +25,21 @@ const config: HardhatUserConfig = {
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
   },
+  etherscan: {
+    apiKey: {
+      "0g-mainnet": "no-api-key-required",
+    },
+    customChains: [
+      {
+        network: "0g-mainnet",
+        chainId: 16661,
+        urls: {
+          apiURL: "https://chainscan.0g.ai/open/api",
+          browserURL: "https://chainscan.0g.ai",
+        },
+      },
+    ],
+  },
 };
 
 export default config;
