@@ -6,10 +6,11 @@
 - Deployment JSON + ABI at /contract/deployments/0g-mainnet.json
 - Demo URLs verified: 3/3 PASS (GitHub raw + IPFS)
 - Anchor service built and tested (/anchor-service)
+  - POST /anchor: batch receipts, Merkle tree, anchorBatch on 0G mainnet — working and tested
+  - POST /verify: 4 checks (url hash, ed25519 signature, chain, on-chain Merkle proof) — working
   - 0G Storage upload working on mainnet (Chain ID 16661, Turbo network)
   - anchorBatch working on mainnet contract 0xcB33A8b65a599767301DcA89a8EdB15e8c4465E3
   - Duplicate batch detection working (contract rejects re-anchoring)
 
 ## Next
-- Verification API: re-fetch URL, compare hash, verify signature, verify chain, verify on-chain anchor
-- Dashboard: Next.js + trust scores + tamper demo button (Day 4)
+- Dashboard: receipt list + trust scores + tamper demo button + green/red check indicators (Day 4)

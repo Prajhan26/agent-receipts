@@ -5,7 +5,27 @@ import express from "express";
 import { anchorBatch, Receipt } from "./anchor";
 import { verifyReceipt, VerifyInput } from "./verify";
 
+const ALLOWED_ORIGINS = new Set([
+  "http://localhost:3001",
+  "http://localhost:3002",
+]);
+
 const app = express();
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
+
 app.use(express.json());
 
 const PORT = process.env.PORT ?? "3000";
