@@ -5,6 +5,16 @@ import express from "express";
 import { anchorBatch, Receipt } from "./anchor";
 import { verifyReceipt, VerifyInput } from "./verify";
 
+type StoredEntry = {
+  receipt: Receipt;
+  batch_id: string;
+  tx_hash: string;
+  block_number: number;
+  merkle_proof: string[];
+};
+
+const store: StoredEntry[] = [];
+
 const ALLOWED_ORIGINS = new Set([
   "http://localhost:3001",
   "http://localhost:3002",
@@ -34,6 +44,10 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/receipts", (_req, res) => {
+  res.json(store);
+});
+
 app.post("/anchor", async (req, res) => {
   const { receipts } = req.body as { receipts: Receipt[] };
 
@@ -44,6 +58,15 @@ app.post("/anchor", async (req, res) => {
 
   try {
     const result = await anchorBatch(receipts);
+    receipts.forEach((receipt, i) => {
+      store.push({
+        receipt,
+        batch_id: result.batch_id,
+        tx_hash: result.tx_hash,
+        block_number: result.block_number,
+        merkle_proof: result.proofs[i],
+      });
+    });
     res.json(result);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

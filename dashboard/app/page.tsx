@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -37,10 +37,12 @@ type VerifyResult = {
   detail: string;
 };
 
-type ReceiptEntry = {
+type StoredEntry = {
   receipt: Receipt;
-  label: string;
-  description: string;
+  batch_id: string;
+  tx_hash: string;
+  block_number: number;
+  merkle_proof: string[];
 };
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -50,87 +52,25 @@ const ANCHOR_URL =
 
 const CONTRACT_ADDRESS = "0xcB33A8b65a599767301DcA89a8EdB15e8c4465E3";
 
-const ZERO_HASH =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const FAKE_PUBKEY =
-  "a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1";
+function shorten(str: string, head = 8, tail = 6): string {
+  if (str.length <= head + tail + 3) return str;
+  return `${str.slice(0, head)}…${str.slice(-tail)}`;
+}
 
-const FAKE_SIG =
-  "a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1" +
-  "a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1";
-
-const MOCK_BATCH_ID =
-  "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
-
-// Mock receipts — URLs verified May 11, 2026 (see examples/DEMO_URLS.md)
-const ENTRIES: ReceiptEntry[] = [
-  {
-    label: "Linux Kernel COPYING",
-    description: "Fetched Linux kernel license from GitHub raw",
-    receipt: {
-      receipt_id: "r-001-linux",
-      agent_pubkey: FAKE_PUBKEY,
-      prev_receipt_hash: ZERO_HASH,
-      task_id: "task-demo-001",
-      timestamp: 1747008000,
-      tool_url:
-        "https://raw.githubusercontent.com/torvalds/linux/master/COPYING",
-      tool_method: "GET",
-      tool_request_hash:
-        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      tool_response_hash:
-        "fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0",
-      tool_response_status: 200,
-      tool_response_excerpt: "Linux kernel is released under the GNU GPL v2",
-      signature: FAKE_SIG,
-    },
-  },
-  {
-    label: "IPFS Document",
-    description: "Fetched immutable document from IPFS",
-    receipt: {
-      receipt_id: "r-002-ipfs",
-      agent_pubkey: FAKE_PUBKEY,
-      prev_receipt_hash:
-        "1111111111111111111111111111111111111111111111111111111111111111",
-      task_id: "task-demo-001",
-      timestamp: 1747008060,
-      tool_url:
-        "https://ipfs.io/ipfs/QmT5NvUtoM5nWFfrQdVrFtvGfKFmG7AHE8P34isapyhCxX",
-      tool_method: "GET",
-      tool_request_hash:
-        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      tool_response_hash:
-        "9cc40206d15aca2c8e3a9492aba7ebb4664b4dc2106df06fd3df26848fff36fd",
-      tool_response_status: 200,
-      tool_response_excerpt: "Content-addressed document on IPFS",
-      signature: FAKE_SIG,
-    },
-  },
-  {
-    label: "Bitcoin COPYING",
-    description: "Fetched Bitcoin Core license from GitHub raw",
-    receipt: {
-      receipt_id: "r-003-bitcoin",
-      agent_pubkey: FAKE_PUBKEY,
-      prev_receipt_hash:
-        "2222222222222222222222222222222222222222222222222222222222222222",
-      task_id: "task-demo-001",
-      timestamp: 1747008120,
-      tool_url:
-        "https://raw.githubusercontent.com/bitcoin/bitcoin/master/COPYING",
-      tool_method: "GET",
-      tool_request_hash:
-        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      tool_response_hash:
-        "b028769f3852a9368ab10bd754ff01ebb741f84a2fa658c9aff82a631bc6ecfc",
-      tool_response_status: 200,
-      tool_response_excerpt: "The MIT License — Bitcoin Core developers",
-      signature: FAKE_SIG,
-    },
-  },
-];
+async function callVerify(
+  receipt: Receipt,
+  batch_id: string,
+  merkle_proof: string[]
+): Promise<VerifyResult> {
+  const res = await fetch(`${ANCHOR_URL}/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ receipt, batch_id, merkle_proof }),
+  });
+  return res.json() as Promise<VerifyResult>;
+}
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -167,16 +107,7 @@ function TrustBadge({ result }: { result: VerifyResult | null }) {
   );
 }
 
-async function callVerify(receipt: Receipt): Promise<VerifyResult> {
-  const res = await fetch(`${ANCHOR_URL}/verify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ receipt, batch_id: MOCK_BATCH_ID, merkle_proof: [] }),
-  });
-  return res.json() as Promise<VerifyResult>;
-}
-
-function ReceiptCard({ entry, index }: { entry: ReceiptEntry; index: number }) {
+function ReceiptCard({ entry, index }: { entry: StoredEntry; index: number }) {
   const [result, setResult] = useState<VerifyResult | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -184,7 +115,9 @@ function ReceiptCard({ entry, index }: { entry: ReceiptEntry; index: number }) {
     setLoading(true);
     setResult(null);
     try {
-      setResult(await callVerify(entry.receipt));
+      setResult(
+        await callVerify(entry.receipt, entry.batch_id, entry.merkle_proof)
+      );
     } catch {
       setResult({
         url_valid: false,
@@ -199,31 +132,48 @@ function ReceiptCard({ entry, index }: { entry: ReceiptEntry; index: number }) {
     }
   }
 
+  const { receipt } = entry;
+
   return (
     <Card>
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle>
-              #{index + 1} {entry.label}
+          <div className="min-w-0">
+            <CardTitle className="break-all text-sm font-mono">
+              #{index + 1} {receipt.tool_url}
             </CardTitle>
-            <CardDescription className="mt-1">{entry.description}</CardDescription>
+            <CardDescription className="mt-1 font-mono text-xs">
+              {receipt.receipt_id}
+            </CardDescription>
           </div>
           <TrustBadge result={result} />
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="rounded-lg bg-muted/50 p-3 text-xs font-mono break-all text-muted-foreground">
-          <span className="font-semibold text-foreground">URL: </span>
-          {entry.receipt.tool_url}
-        </div>
-        <div className="rounded-lg bg-muted/50 p-3 text-xs font-mono break-all text-muted-foreground">
-          <span className="font-semibold text-foreground">SHA-256: </span>
-          {entry.receipt.tool_response_hash}
+        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 rounded-lg bg-muted/50 p-3 text-xs font-mono">
+          <span className="font-semibold text-foreground">hash</span>
+          <span className="break-all text-muted-foreground">
+            {receipt.tool_response_hash}
+          </span>
+          <span className="font-semibold text-foreground">batch</span>
+          <span className="text-muted-foreground">{shorten(entry.batch_id)}</span>
+          <span className="font-semibold text-foreground">tx</span>
+          <span className="text-muted-foreground">
+            <a
+              href={`https://chainscan.0g.ai/tx/${entry.tx_hash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-foreground transition-colors"
+            >
+              {shorten(entry.tx_hash)}
+            </a>
+          </span>
+          <span className="font-semibold text-foreground">block</span>
+          <span className="text-muted-foreground">{entry.block_number}</span>
         </div>
         {result && (
           <>
-            <div className="flex flex-wrap gap-1.5 pt-1">
+            <div className="flex flex-wrap gap-1.5">
               <CheckPill label="URL hash" pass={result.url_valid} />
               <CheckPill label="Signature" pass={result.signature_valid} />
               <CheckPill label="Chain" pass={result.chain_valid} />
@@ -247,19 +197,33 @@ function ReceiptCard({ entry, index }: { entry: ReceiptEntry; index: number }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const [receipts, setReceipts] = useState<StoredEntry[]>([]);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [tamperResult, setTamperResult] = useState<VerifyResult | null>(null);
   const [tamperLoading, setTamperLoading] = useState(false);
 
+  useEffect(() => {
+    fetch(`${ANCHOR_URL}/receipts`)
+      .then((r) => r.json())
+      .then((data) => setReceipts(data as StoredEntry[]))
+      .catch((e: Error) => setFetchError(e.message))
+      .finally(() => setFetchLoading(false));
+  }, []);
+
   async function runTamperDemo() {
+    if (!receipts[0]) return;
     setTamperLoading(true);
     setTamperResult(null);
     const tampered: Receipt = {
-      ...ENTRIES[0].receipt,
+      ...receipts[0].receipt,
       tool_response_hash:
         "0000000000000000000000000000000000000000000000000000000000000000",
     };
     try {
-      setTamperResult(await callVerify(tampered));
+      setTamperResult(
+        await callVerify(tampered, receipts[0].batch_id, receipts[0].merkle_proof)
+      );
     } catch {
       setTamperResult({
         url_valid: false,
@@ -307,8 +271,29 @@ export default function Home() {
         {/* Receipt list */}
         <div className="space-y-4 mb-10">
           <h2 className="text-lg font-semibold">Receipts</h2>
-          {ENTRIES.map((entry, i) => (
-            <ReceiptCard key={entry.receipt.receipt_id} entry={entry} index={i} />
+
+          {fetchLoading && (
+            <p className="text-sm text-muted-foreground">Loading receipts…</p>
+          )}
+          {fetchError && (
+            <p className="text-sm text-destructive">
+              Could not reach anchor service: {fetchError}
+            </p>
+          )}
+          {!fetchLoading && !fetchError && receipts.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No receipts yet. Run{" "}
+              <code className="text-xs">cd examples && npm run e2e</code> to
+              generate receipts.
+            </p>
+          )}
+
+          {receipts.map((entry, i) => (
+            <ReceiptCard
+              key={entry.receipt.receipt_id}
+              entry={entry}
+              index={i}
+            />
           ))}
         </div>
 
@@ -319,50 +304,67 @@ export default function Home() {
             <CardHeader>
               <CardTitle>Simulate Receipt Tampering</CardTitle>
               <CardDescription>
-                Takes receipt #1 and replaces its <code className="text-xs">tool_response_hash</code> with
-                all-zeros — simulating an agent that modified its receipt after the fact.
-                The URL hash check should catch this.
+                {receipts[0] ? (
+                  <>
+                    Takes receipt #1 and replaces its{" "}
+                    <code className="text-xs">tool_response_hash</code> with
+                    all-zeros — simulating an agent that modified its receipt
+                    after the fact. The URL hash check should catch this.
+                  </>
+                ) : (
+                  "Run the e2e test first to load a receipt for tampering."
+                )}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="rounded-lg border border-dashed border-destructive/50 bg-destructive/5 p-3 text-xs font-mono text-muted-foreground">
-                <span className="font-semibold text-destructive">tampered: </span>
-                tool_response_hash ={" "}
-                <span className="text-destructive font-semibold">
-                  0000000000000000000000000000000000000000000000000000000000000000
-                </span>
-              </div>
-              {tamperResult && (
-                <>
-                  <div className="flex flex-wrap gap-1.5">
-                    <CheckPill label="URL hash" pass={tamperResult.url_valid} />
-                    <CheckPill label="Signature" pass={tamperResult.signature_valid} />
-                    <CheckPill label="Chain" pass={tamperResult.chain_valid} />
-                    <CheckPill label="On-chain" pass={tamperResult.anchor_valid} />
-                  </div>
-                  <p className="text-xs font-mono text-muted-foreground">
-                    {tamperResult.detail}
-                  </p>
-                  <div
-                    className={`rounded-lg p-3 text-sm font-semibold ${
-                      tamperResult.overall
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                    }`}
-                  >
-                    {tamperResult.overall
-                      ? "TRUSTED — tamper not detected (unexpected)"
-                      : "TAMPERED — receipt rejected"}
-                  </div>
-                </>
-              )}
-            </CardContent>
+            {receipts[0] && (
+              <CardContent className="space-y-3">
+                <div className="rounded-lg border border-dashed border-destructive/50 bg-destructive/5 p-3 text-xs font-mono text-muted-foreground">
+                  <span className="font-semibold text-destructive">
+                    tampered:{" "}
+                  </span>
+                  tool_response_hash ={" "}
+                  <span className="text-destructive font-semibold">
+                    0000000000000000000000000000000000000000000000000000000000000000
+                  </span>
+                </div>
+                {tamperResult && (
+                  <>
+                    <div className="flex flex-wrap gap-1.5">
+                      <CheckPill label="URL hash" pass={tamperResult.url_valid} />
+                      <CheckPill
+                        label="Signature"
+                        pass={tamperResult.signature_valid}
+                      />
+                      <CheckPill label="Chain" pass={tamperResult.chain_valid} />
+                      <CheckPill
+                        label="On-chain"
+                        pass={tamperResult.anchor_valid}
+                      />
+                    </div>
+                    <p className="text-xs font-mono text-muted-foreground">
+                      {tamperResult.detail}
+                    </p>
+                    <div
+                      className={`rounded-lg p-3 text-sm font-semibold ${
+                        tamperResult.overall
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      }`}
+                    >
+                      {tamperResult.overall
+                        ? "TRUSTED — tamper not detected (unexpected)"
+                        : "TAMPERED — receipt rejected"}
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            )}
             <CardFooter>
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={runTamperDemo}
-                disabled={tamperLoading}
+                disabled={tamperLoading || !receipts[0]}
               >
                 {tamperLoading ? "Running…" : "Run Tamper Demo"}
               </Button>

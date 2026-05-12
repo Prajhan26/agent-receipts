@@ -38,6 +38,7 @@ export type AnchorResult = {
   tx_hash: string;
   block_number: number;
   receipt_count: number;
+  proofs: string[][];
 };
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -89,6 +90,7 @@ export async function anchorBatch(receipts: Receipt[]): Promise<AnchorResult> {
   const leaves = hashes.map((h) => Buffer.from(h, "hex"));
   const tree = new MerkleTree(leaves, sha256, { sortPairs: true });
   const merkleRoot = tree.getRoot().toString("hex");
+  const proofs = leaves.map((leaf) => tree.getHexProof(leaf));
 
   // 3. Compute batch_id from receipt_ids
   const receiptIds = receipts.map((r) => r.receipt_id);
@@ -132,5 +134,6 @@ export async function anchorBatch(receipts: Receipt[]): Promise<AnchorResult> {
     tx_hash: tx.hash,
     block_number: txReceipt.blockNumber,
     receipt_count: receipts.length,
+    proofs,
   };
 }
