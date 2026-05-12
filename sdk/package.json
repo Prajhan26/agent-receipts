@@ -1,0 +1,24 @@
+{
+  "name": "agent-receipts-sdk",
+  "version": "0.1.0",
+  "description": "Tamper-proof receipts for AI agents",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "npx ts-node src/test.ts"
+  },
+  "dependencies": {
+    "@0gfoundation/0g-storage-ts-sdk": "^1.2.9",
+    "@noble/ed25519": "^2.0.0",
+    "canonicalize": "^2.0.0",
+    "ethers": "^6.13.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
