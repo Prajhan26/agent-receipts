@@ -94,7 +94,7 @@ export async function verifyReceipt(input: VerifyInput): Promise<VerifyResult> {
 
   // 3. Verify chain: prev_receipt_hash must equal SHA-256 of the previous receipt
   let chain_valid = false;
-  if (receipt.prev_receipt_hash === ZERO_HASH) {
+  if (receipt.prev_receipt_hash === ZERO_HASH || receipt.prev_receipt_hash === "0x0") {
     chain_valid = true;
     parts.push("chain:PASS(first in chain)");
   } else if (!prev_receipt) {

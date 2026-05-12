@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "verify-urls": "tsx verify-demo-urls.ts"
+    "verify-urls": "tsx verify-demo-urls.ts",
+    "e2e": "tsx e2e-test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
