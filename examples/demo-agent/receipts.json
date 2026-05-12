@@ -1,0 +1,72 @@
+[
+  {
+    "receipt_id": "4dd92d65-b207-430e-a307-a4505d7a2867",
+    "agent_pubkey": "b6802adfb8dcbbb9cf4908c5d4a2383a15573a841b17cbe3bb338a158a576ea6",
+    "prev_receipt_hash": "0x0",
+    "task_id": "demo-agent-run",
+    "timestamp": 1778565245456,
+    "tool_url": "https://httpbin.org/json",
+    "tool_method": "GET",
+    "tool_request_hash": "0x0",
+    "tool_response_hash": "bab3dfd2a6c992e4bf589eee05fc9650cc9d6988660b947a7a87b99420d108f9",
+    "tool_response_status": 200,
+    "tool_response_excerpt": "{\n  \"slideshow\": {\n    \"author\": \"Yours Truly\", \n    \"date\": \"date of publication\", \n    \"slides\": [\n      {\n        \"title\": \"Wake up to WonderWidgets!\", \n        \"type\": \"all\"\n      }, \n      {\n        \"items\": [\n          \"Why <em>WonderWidgets</em> are great\", \n          \"Who <em>buys</em> WonderWidgets\"\n        ], \n        \"title\": \"Overview\", \n        \"type\": \"all\"\n      }\n    ], \n    \"title\": \"Sample Slide Show\"\n  }\n}\n",
+    "signature": "c11970156099c8dbc80b2b224b1121f1398d2c27b303c2a1603dab20cf4b4d9dd4f4ea37319e19ce6867f17b5ee80ebbded2659a0fd3606d2ec87619d9834a07"
+  },
+  {
+    "receipt_id": "360c132a-dff2-49bb-8084-19bd43330ba9",
+    "agent_pubkey": "b6802adfb8dcbbb9cf4908c5d4a2383a15573a841b17cbe3bb338a158a576ea6",
+    "prev_receipt_hash": "16e3c7aab53ccac4dcd3bc5723836850cecadb71033806cf2d46fc46961ad472",
+    "task_id": "demo-agent-run",
+    "timestamp": 1778565284799,
+    "tool_url": "https://jsonplaceholder.typicode.com/todos/1",
+    "tool_method": "GET",
+    "tool_request_hash": "0x0",
+    "tool_response_hash": "6079a162cf49972bbcf2fb4001f31dd7cc80b2f3fdd626a708093758cddb2bd7",
+    "tool_response_status": 200,
+    "tool_response_excerpt": "{\n  \"userId\": 1,\n  \"id\": 1,\n  \"title\": \"delectus aut autem\",\n  \"completed\": false\n}",
+    "signature": "657a3ac5ab0c363c9090cb6c7158bfe0dfd3c6e8cd49b50d15c55ef01e2d70293cbb423078ce4651d32853fd203fcf6ecf595d4aded9e4dae276c2875e04950a"
+  },
+  {
+    "receipt_id": "9a878798-8385-4b5e-a9b1-6b905b8ee105",
+    "agent_pubkey": "b6802adfb8dcbbb9cf4908c5d4a2383a15573a841b17cbe3bb338a158a576ea6",
+    "prev_receipt_hash": "37a07b179ab982a7effef919f66e506d127bfef143a99dad238f0c2ed3cc6eab",
+    "task_id": "demo-agent-run",
+    "timestamp": 1778565320177,
+    "tool_url": "https://jsonplaceholder.typicode.com/posts/1",
+    "tool_method": "GET",
+    "tool_request_hash": "0x0",
+    "tool_response_hash": "965636bd900078aa86a714aea4de146af6d396205d5100636f1bdd2454f73420",
+    "tool_response_status": 200,
+    "tool_response_excerpt": "{\n  \"userId\": 1,\n  \"id\": 1,\n  \"title\": \"sunt aut facere repellat provident occaecati excepturi optio reprehenderit\",\n  \"body\": \"quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto\"\n}",
+    "signature": "1793327d41fad14ca91ca485810d3a45d740c515b046e6a67643a0b2e4e9911b46e267f30db8973a0de2bd949663ff85088d7d90a6cddf792d5670e3b0bb4c0e"
+  },
+  {
+    "receipt_id": "da42f34b-fd09-4748-b002-f1cc0ef52ac9",
+    "agent_pubkey": "b6802adfb8dcbbb9cf4908c5d4a2383a15573a841b17cbe3bb338a158a576ea6",
+    "prev_receipt_hash": "7ec97ee8b115791824f0641c1f0a62e7b02e789225fce5e5160aaa1f44604958",
+    "task_id": "demo-agent-run",
+    "timestamp": 1778565358284,
+    "tool_url": "https://httpbin.org/uuid",
+    "tool_method": "GET",
+    "tool_request_hash": "0x0",
+    "tool_response_hash": "793c2e1dc39c198f3ed8f50f73da703f737353c6032e8e51b83cafd13ca5a5df",
+    "tool_response_status": 200,
+    "tool_response_excerpt": "{\n  \"uuid\": \"a0ce96d3-9a61-474d-bfa8-f35146ef6d26\"\n}\n",
+    "signature": "1b6288ba6e045723784c09a4fe1bb7d0ee776339482f754637005456036d357d061da8e1df2ff0bcc6a9d9d3fdb2f278a065d83e4f8bc5cd08e5168dab9aa603"
+  },
+  {
+    "receipt_id": "25317f6b-acd6-4c68-9356-cbb75e962c8c",
+    "agent_pubkey": "b6802adfb8dcbbb9cf4908c5d4a2383a15573a841b17cbe3bb338a158a576ea6",
+    "prev_receipt_hash": "8e93b318534c1f1b9ff40975e4cc9ab80c909d227b13b4b632df973598499b00",
+    "task_id": "demo-agent-run",
+    "timestamp": 1778565397434,
+    "tool_url": "https://jsonplaceholder.typicode.com/users/1",
+    "tool_method": "GET",
+    "tool_request_hash": "0x0",
+    "tool_response_hash": "3c88d6edad2d9b03a26dad748d151e7bd8efc58cfe490876b0f9a2157a7ba0af",
+    "tool_response_status": 200,
+    "tool_response_excerpt": "{\n  \"id\": 1,\n  \"name\": \"Leanne Graham\",\n  \"username\": \"Bret\",\n  \"email\": \"Sincere@april.biz\",\n  \"address\": {\n    \"street\": \"Kulas Light\",\n    \"suite\": \"Apt. 556\",\n    \"city\": \"Gwenborough\",\n    \"zipcode\": \"92998-3874\",\n    \"geo\": {\n      \"lat\": \"-37.3159\",\n      \"lng\": \"81.1496\"\n    }\n  },\n  \"phone\": \"1-770-736-8031 x56442\",\n  \"website\": \"hildegard.org\",\n  \"company\": {\n    \"name\": \"Romaguera-Crona\",\n    \"catchPhrase\": \"Multi-layered client-server neural-net\",\n    \"bs\": \"harness real-time e-marke",
+    "signature": "5095dbf706e7d214f730dd271461dd7e48db5391025c170267cbd8a4369612f3f1bce184725e03af2f18b6a8158cf3087d3cdeefd0d473ff8af2eaf095e2d10e"
+  }
+]

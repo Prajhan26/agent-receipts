@@ -1,0 +1,17 @@
+{
+  "name": "demo-agent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node agent.ts"
+  },
+  "dependencies": {
+    "agent-receipts-sdk": "file:../../sdk",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}
