@@ -18,6 +18,7 @@ const store: StoredEntry[] = [];
 const ALLOWED_ORIGINS = new Set([
   "http://localhost:3001",
   "http://localhost:3002",
+  "https://agent-receipts.vercel.app",
 ]);
 
 const app = express();
