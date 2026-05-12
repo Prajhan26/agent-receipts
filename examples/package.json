@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "verify-urls": "tsx verify-demo-urls.ts",
-    "e2e": "tsx e2e-test.ts"
+    "e2e": "tsx e2e-test.ts",
+    "anchor-prajhan": "tsx anchor-prajhan-receipts.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
