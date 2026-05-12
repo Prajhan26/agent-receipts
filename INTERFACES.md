@@ -32,7 +32,7 @@ type Receipt = {
   tool_response_excerpt: string;   // First 500 chars of response (UTF-8 safe)
   
   // Signature
-  agent_signature: string;         // ed25519 signature (hex) over canonical JSON of all fields above
+  signature: string;               // ed25519 signature (hex) over canonical JSON of all fields above
 };
 ```
 
@@ -66,10 +66,10 @@ Canonical output (keys sorted, no spaces):
 
 ## Signing Rule
 
-1. Build receipt object with ALL fields except `agent_signature`
+1. Build receipt object with ALL fields except `signature`
 2. Compute canonical JSON of that object
 3. Sign the canonical JSON bytes with agent's ed25519 private key
-4. Add signature as `agent_signature` field
+4. Add signature as `signature` field
 
 ---
 

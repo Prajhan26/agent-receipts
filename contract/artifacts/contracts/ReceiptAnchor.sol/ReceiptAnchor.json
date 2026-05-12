@@ -1,0 +1,84 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ReceiptAnchor",
+  "sourceName": "contracts/ReceiptAnchor.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "batchId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "merkleRoot",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "receiptCount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "anchoredAt",
+          "type": "uint256"
+        }
+      ],
+      "name": "BatchAnchored",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "batchId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "merkleRoot",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "receiptCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "anchorBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "batchId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getBatchRoot",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561000f575f80fd5b506101d08061001d5f395ff3fe608060405234801561000f575f80fd5b5060043610610034575f3560e01c80633acba8ec146100385780636850ab7b14610069575b5f80fd5b61005761004636600461015a565b5f9081526020819052604090205490565b60405190815260200160405180910390f35b61007c610077366004610171565b61007e565b005b5f83815260208190526040902060020154156100d95760405162461bcd60e51b815260206004820152601660248201527518985d18da08185b1c9958591e48185b98da1bdc995960521b604482015260640160405180910390fd5b60408051606080820183528482526020808301858152428486018181525f8a81528085528790209551865591516001860155905160029094019390935583518681529081018590529283019190915284917f1e913e68ce77d254be7f9863bafdd1f77a4c24b12d979efc38690fa1b60dd217910160405180910390a2505050565b5f6020828403121561016a575f80fd5b5035919050565b5f805f60608486031215610183575f80fd5b50508135936020830135935060409092013591905056fea26469706673582212204cd88d5d05fdaa0ac10b816c6a2f66b0b08cd7c0b445f1a05ead9e64bae3de4064736f6c63430008180033",
+  "deployedBytecode": "0x608060405234801561000f575f80fd5b5060043610610034575f3560e01c80633acba8ec146100385780636850ab7b14610069575b5f80fd5b61005761004636600461015a565b5f9081526020819052604090205490565b60405190815260200160405180910390f35b61007c610077366004610171565b61007e565b005b5f83815260208190526040902060020154156100d95760405162461bcd60e51b815260206004820152601660248201527518985d18da08185b1c9958591e48185b98da1bdc995960521b604482015260640160405180910390fd5b60408051606080820183528482526020808301858152428486018181525f8a81528085528790209551865591516001860155905160029094019390935583518681529081018590529283019190915284917f1e913e68ce77d254be7f9863bafdd1f77a4c24b12d979efc38690fa1b60dd217910160405180910390a2505050565b5f6020828403121561016a575f80fd5b5035919050565b5f805f60608486031215610183575f80fd5b50508135936020830135935060409092013591905056fea26469706673582212204cd88d5d05fdaa0ac10b816c6a2f66b0b08cd7c0b445f1a05ead9e64bae3de4064736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

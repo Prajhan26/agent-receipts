@@ -1,0 +1,15 @@
+{
+  "name": "agent-receipts-examples",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "verify-urls": "tsx verify-demo-urls.ts",
+    "e2e": "tsx e2e-test.ts",
+    "anchor-prajhan": "tsx anchor-prajhan-receipts.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
