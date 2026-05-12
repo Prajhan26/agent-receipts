@@ -48,7 +48,7 @@ type StoredEntry = {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const ANCHOR_URL =
-  process.env.NEXT_PUBLIC_ANCHOR_SERVICE_URL ?? "http://localhost:3000";
+  process.env.NEXT_PUBLIC_ANCHOR_SERVICE_URL ?? "https://agent-receipts-anchor.onrender.com";
 
 const CONTRACT_ADDRESS = "0xcB33A8b65a599767301DcA89a8EdB15e8c4465E3";
 
