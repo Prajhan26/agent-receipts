@@ -4,7 +4,7 @@ import path from "node:path";
 import canonicalize from "canonicalize";
 import { MerkleTree } from "merkletreejs";
 import { ethers } from "ethers";
-import { Indexer, MemData } from "@0gfoundation/0g-storage-ts-sdk";
+import { Indexer, MemData, Batcher, getFlowContract } from "@0gfoundation/0g-storage-ts-sdk";
 
 // ── Types from INTERFACES.md ──────────────────────────────────────────────────
 
@@ -35,6 +35,7 @@ type Batch = {
 export type AnchorResult = {
   batch_id: string;
   merkle_root: string;
+  storage_root_hash: string;
   tx_hash: string;
   block_number: number;
   receipt_count: number;
@@ -52,6 +53,8 @@ const DEPLOYMENT = JSON.parse(
 
 const RPC_URL = "https://evmrpc.0g.ai";
 const INDEXER_URL = "https://indexer-storage-turbo.0g.ai";
+const FLOW_CONTRACT = "0x62D4144dB0F0a6fBBaeb6296c785C71B3D57C526";
+const STREAM_ID = "0x" + createHash("sha256").update("agent-receipts").digest("hex");
 
 // ── Hashing helpers ───────────────────────────────────────────────────────────
 
@@ -122,15 +125,47 @@ export async function anchorBatch(receipts: Receipt[]): Promise<AnchorResult> {
     block_number: txReceipt.blockNumber,
   };
 
-  // 6. Store batch at batches/{batch_id}.json on 0G Storage via MemData
+  // 6. Store batch JSON on 0G Storage, capture rootHash for KV
   const batchBytes = Buffer.from(JSON.stringify(batch));
   const memData = new MemData(batchBytes);
   const indexer = new Indexer(INDEXER_URL);
-  await indexer.upload(memData, RPC_URL, signer);
+  const [uploadResult, uploadErr] = await indexer.upload(memData, RPC_URL, signer);
+  if (uploadErr != null) throw new Error(`0G Storage upload failed: ${uploadErr.message}`);
+  const storageRootHash: string =
+    "rootHash" in uploadResult ? uploadResult.rootHash : uploadResult.rootHashes[0];
+
+  // 7. Write to 0G KV (second on-chain tx)
+  const [kvClients, kvErr] = await indexer.selectNodes(1, "min");
+  if (kvErr != null) throw new Error(`Failed to select 0G nodes for KV: ${kvErr.message}`);
+  const flow = getFlowContract(FLOW_CONTRACT, signer);
+  const batcher = new Batcher(0, kvClients, flow, RPC_URL);
+
+  batcher.streamDataBuilder.set(
+    STREAM_ID,
+    Buffer.from("batch:" + batchId),
+    Buffer.from(
+      JSON.stringify({
+        merkle_root: merkleRoot,
+        storage_root_hash: storageRootHash,
+        tx_hash: tx.hash,
+        receipt_ids: receiptIds,
+      })
+    )
+  );
+  for (const receiptId of receiptIds) {
+    batcher.streamDataBuilder.set(
+      STREAM_ID,
+      Buffer.from("receipt:" + receiptId + ":batch"),
+      Buffer.from(batchId)
+    );
+  }
+  const [, kvExecErr] = await batcher.exec();
+  if (kvExecErr != null) throw new Error(`0G KV write failed: ${kvExecErr.message}`);
 
   return {
     batch_id: batchId,
     merkle_root: merkleRoot,
+    storage_root_hash: storageRootHash,
     tx_hash: tx.hash,
     block_number: txReceipt.blockNumber,
     receipt_count: receipts.length,

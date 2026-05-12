@@ -11,7 +11,12 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://api.chainscan.0g.ai/api?module=contract&action=getabi&address=0xcB33A8b65a599767301DcA89a8EdB15e8c4465E3\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://scan-api.0g.ai/api?module=contract&action=getabi&address=0xcB33A8b65a599767301DcA89a8EdB15e8c4465E3\")",
       "WebSearch",
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack --yes)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack --yes)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e ' *)"
     ]
   }
 }
