@@ -1,7 +1,7 @@
 import { wrapFetch, generateKeypair } from "../sdk/src";
 import type { Receipt } from "../sdk/src";
 
-const ANCHOR_URL = "http://localhost:3000";
+const ANCHOR_URL = "https://agent-receipts-anchor.onrender.com";
 const TOOL_URL =
   "https://raw.githubusercontent.com/bitcoin/bitcoin/master/COPYING";
 
