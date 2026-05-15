@@ -4,6 +4,9 @@
 
 ---
 
+<img width="1229" height="554" alt="Screenshot 2026-05-15 at 9 37 12 PM" src="https://github.com/user-attachments/assets/355eb581-acd0-410d-883e-7b58647fb220" />
+
+
 ## What is AgentReceipts?
 
 AgentReceipts is an SDK and verification service that wraps every HTTP tool call made by an AI agent into a cryptographically signed, hash-chained receipt. Each receipt captures the URL that was fetched, a SHA-256 hash of the exact response body, the agent's ed25519 signature, and a pointer to the previous receipt in the chain. Batches of receipts are anchored to 0G Chain mainnet via Merkle roots, and individual receipts are stored on 0G Storage. Any party — the user, an auditor, or another agent — can later re-fetch the URL, recompute the hash, verify the signature, and confirm that the on-chain Merkle proof is valid. If the agent tampered with any receipt, the verification fails.
