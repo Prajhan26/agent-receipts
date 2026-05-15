@@ -12,11 +12,57 @@ AgentReceipts is an SDK and verification service that wraps every HTTP tool call
 
 ## The Problem
 
-AI agents increasingly act autonomously: browsing the web, calling APIs, reading documents, and taking actions on behalf of users. But there is no way to prove what an agent actually saw. An agent could claim it fetched a document with a certain conclusion when the real content said something different. It could quietly swap a response, omit a result, or fabricate a tool call entirely. Today, users have no cryptographic recourse — they have to trust the agent's word. AgentReceipts removes that trust requirement.
+AI agents increasingly act autonomously: browsing the web, calling APIs, reading documents, and taking actions on behalf of users. But there is still no standard way to prove what an agent actually saw, what tool it really called, or whether the result was modified later.
+
+That creates three practical failure modes:
+
+- **Hallucinated evidence**: an agent says it fetched a source, but its summary does not match the real content.
+- **Phantom tool calls**: an agent claims a tool call happened when it never did.
+- **Post-hoc tampering**: someone changes the saved result after the agent run and presents it as authentic.
+
+### Example
+
+> **User:** "Research this token and tell me whether the team announced a mainnet launch."  
+> **Agent:** "I fetched the official blog and the team confirmed mainnet is live."  
+> **Reality:** the blog either said something else, the agent read a different URL, or the stored response was edited later.
+
+Without receipts, the user has no way to prove what the agent actually fetched. With AgentReceipts, that exact tool call becomes a signed, chained, tamper-evident record that can be verified later.
+
+### Why this matters now
+
+In OpenAI's **SimpleQA** factuality benchmark, frontier models were still marked **incorrect on 36.1% to 60.8% of prompts** in the evaluated set, depending on model. That does **not** mean every agent is unusable, but it does mean that "the agent said so" is not a strong enough trust model for systems that browse, research, or make decisions on behalf of users.[^simpleqa]
+
+```mermaid
+xychart-beta
+    title "Incorrect answers on SimpleQA (lower is better)"
+    x-axis [Claude-3-Opus, Claude-3.5-Sonnet, GPT-4o, o1-preview]
+    y-axis "Incorrect %" 0 --> 70
+    bar [36.9, 36.1, 60.8, 48.1]
+```
+
+### What breaks without cryptographic receipts?
+
+```mermaid
+flowchart LR
+    A[Agent output] --> B{Can the user verify it?}
+    B -->|No| C[Trust me log]
+    C --> D[Agent may misquote a source]
+    C --> E[Agent may invent a tool call]
+    C --> F[Saved result may be altered later]
+    B -->|Yes| G[Signed receipt]
+    G --> H[Hash of request and response]
+    G --> I[Signature + receipt chain]
+    G --> J[Stored on 0G Storage]
+    G --> K[Anchored on 0G Chain]
+```
+
+AgentReceipts exists to replace "trust me" agent logs with verifiable proof.
 
 ---
 
 ## Architecture
+
+![AgentReceipts architecture](docs/images/agentreceipts-architecture.png)
 
 ```
 Agent code
@@ -170,3 +216,5 @@ AgentReceipts provides the trust layer that agentic economies require. When AI a
 ---
 
 *Built for the 0G APAC Hackathon, May 2026.*
+
+[^simpleqa]: Source: OpenAI, *Introducing SimpleQA* and *Measuring short-form factuality in large language models* (Oct 30, 2024). Benchmark table reports incorrect-answer rates of 36.9% (Claude 3 Opus), 36.1% (Claude 3.5 Sonnet), 60.8% (GPT-4o), and 48.1% (o1-preview). https://openai.com/index/introducing-simpleqa/ and https://cdn.openai.com/papers/simpleqa.pdf
