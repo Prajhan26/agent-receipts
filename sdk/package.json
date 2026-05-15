@@ -1,11 +1,13 @@
 {
   "name": "agent-receipts-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tamper-proof receipts for AI agents",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "test": "npx ts-node src/test.ts"
   },
   "dependencies": {
